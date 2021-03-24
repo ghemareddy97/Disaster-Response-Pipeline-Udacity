@@ -37,7 +37,7 @@ Basic [Anaconda](https://www.anaconda.com/) installation would be enough to run 
 
 ### Motivation
 
-This project is fascilitated to categorize the disaster into one or more of the available 36 different categories for ease of response. A machine learning model with MultiOutputClassifier and RandomForestClassifier have been trained on a variety of data with a large number of samples for each category. 
+This project is desgined and built to categorize the disaster into one or more of the available 36 different categories for ease of response. A machine learning model with MultiOutputClassifier and RandomForestClassifier have been trained on a variety of data with a large number of samples for each category. 
 
 ### File Structure
 
