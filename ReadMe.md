@@ -23,7 +23,7 @@
 
 3. Go to http://0.0.0.0:3001/
 
-### Dependencies
+### Installation
 
 Basic [Anaconda](https://www.anaconda.com/) installation would be enough to run this code. The following packages have been used to create this notebook.
 

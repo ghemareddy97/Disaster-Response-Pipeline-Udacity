@@ -28,7 +28,7 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/disasterResponse.db')
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('disaster_table', engine)
 
 # load model
@@ -47,6 +47,10 @@ def index():
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
+    df_new = df.drop(['id','message', 'original', 'genre'], axis = 1)
+    labels = list(df_new.columns)
+    sum_values = list(df_new.sum().values)
+    mean_values = list(df_new.mean().values)
     graphs = [
         {
             'data': [
@@ -63,6 +67,42 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=labels,
+                    y=sum_values
+                )
+            ],
+
+            'layout': {
+                'title': 'Sum of datapoints of labels',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Labels"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=labels,
+                    y=mean_values
+                )
+            ],
+
+            'layout': {
+                'title': 'Mean of datapoints of labels',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Labels"
                 }
             }
         }

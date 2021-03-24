@@ -14,11 +14,13 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer() 
 
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
 
 import re
@@ -37,7 +39,6 @@ def load_data(database_filepath):
     df = pd.read_sql_table('disaster_table', engine)
     X = df['message']
     y = df.drop(['id','message', 'original', 'genre'], axis = 1)
-    X = X.apply(lambda text: tokenize(text))
     return X, y, y.columns
 
 def tokenize(text):
@@ -47,11 +48,13 @@ def tokenize(text):
         Input: String  
         Output: string with pure string characters
     '''
+    
     stop_words = set(stopwords.words('english'))  
-    text = re.sub(r'[^\w\s]', '', text)
-    text = re.sub(r'[0-9]', '', text)
-    text = word_tokenize(text)
-    return ' '.join([lemmatizer.lemmatize(w) for w in text if not w in stop_words])
+#     text = re.sub(r'[^\w\s]', '', text)
+#     text = re.sub(r'[0-9]', '', text)
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
+    text = word_tokenize(text.lower())
+    return [lemmatizer.lemmatize(w) for w in text if not w in stop_words]
 
 
 def build_model():
@@ -63,10 +66,18 @@ def build_model():
     '''
     
     pipeline = Pipeline([
-        ('tfidf', TfidfVectorizer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(n_estimators=30)))
+        ('cntvect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
-    return pipeline
+    
+    parameters = {
+
+    'clf__estimator__n_estimators':[25, 30],
+}
+
+    cv = GridSearchCV(pipeline, parameters,n_jobs=9, verbose=4)
+    return cv
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
